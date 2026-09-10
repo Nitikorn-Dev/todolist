@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+/* Theme is chosen by the user (see src/lib/theme/theme.ts) via a "dark"
+   class on <html>, not solely by OS preference, so dark: utilities and the
+   variables below key off that class. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}

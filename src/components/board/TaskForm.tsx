@@ -26,47 +26,58 @@ type TaskFormProps = {
 export function TaskForm({ mode, taskId, columns, profiles, defaultValues }: TaskFormProps) {
   const action = mode === "create" ? createTaskAction : updateTaskAction;
   const [state, formAction] = useActionState(action, initialState);
+  const idPrefix = `${mode}-${taskId ?? "new"}`;
 
   return (
-    <form action={formAction} className="flex flex-col gap-3">
+    <form action={formAction} noValidate className="flex flex-col gap-3">
       {mode === "edit" && taskId ? <input type="hidden" name="taskId" value={taskId} /> : null}
 
       <div className="flex flex-col gap-1">
-        <label htmlFor={`${mode}-title-${taskId ?? "new"}`} className="text-sm font-medium">
+        <label htmlFor={`${idPrefix}-title`} className="text-sm font-medium">
           Title
         </label>
         <input
-          id={`${mode}-title-${taskId ?? "new"}`}
+          id={`${idPrefix}-title`}
           name="title"
           defaultValue={defaultValues.title}
+          aria-invalid={Boolean(state.errors?.title)}
+          aria-describedby={state.errors?.title ? `${idPrefix}-title-error` : undefined}
           className={inputClassName}
         />
-        {state.errors?.title ? <p className="text-sm text-red-600">{state.errors.title}</p> : null}
+        {state.errors?.title ? (
+          <p id={`${idPrefix}-title-error`} role="alert" className="text-sm text-red-600">
+            {state.errors.title}
+          </p>
+        ) : null}
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor={`${mode}-description-${taskId ?? "new"}`} className="text-sm font-medium">
+        <label htmlFor={`${idPrefix}-description`} className="text-sm font-medium">
           Description
         </label>
         <textarea
-          id={`${mode}-description-${taskId ?? "new"}`}
+          id={`${idPrefix}-description`}
           name="description"
           defaultValue={defaultValues.description}
           rows={2}
+          aria-invalid={Boolean(state.errors?.description)}
+          aria-describedby={state.errors?.description ? `${idPrefix}-description-error` : undefined}
           className={inputClassName}
         />
         {state.errors?.description ? (
-          <p className="text-sm text-red-600">{state.errors.description}</p>
+          <p id={`${idPrefix}-description-error`} role="alert" className="text-sm text-red-600">
+            {state.errors.description}
+          </p>
         ) : null}
       </div>
 
       <div className="flex gap-3">
         <div className="flex flex-1 flex-col gap-1">
-          <label htmlFor={`${mode}-priority-${taskId ?? "new"}`} className="text-sm font-medium">
+          <label htmlFor={`${idPrefix}-priority`} className="text-sm font-medium">
             Priority
           </label>
           <select
-            id={`${mode}-priority-${taskId ?? "new"}`}
+            id={`${idPrefix}-priority`}
             name="priority"
             defaultValue={defaultValues.priority}
             className={inputClassName}
@@ -77,29 +88,33 @@ export function TaskForm({ mode, taskId, columns, profiles, defaultValues }: Tas
           </select>
         </div>
         <div className="flex flex-1 flex-col gap-1">
-          <label htmlFor={`${mode}-dueDate-${taskId ?? "new"}`} className="text-sm font-medium">
+          <label htmlFor={`${idPrefix}-dueDate`} className="text-sm font-medium">
             Due date
           </label>
           <input
-            id={`${mode}-dueDate-${taskId ?? "new"}`}
+            id={`${idPrefix}-dueDate`}
             name="dueDate"
             type="date"
             defaultValue={defaultValues.dueDate}
+            aria-invalid={Boolean(state.errors?.dueDate)}
+            aria-describedby={state.errors?.dueDate ? `${idPrefix}-dueDate-error` : undefined}
             className={inputClassName}
           />
           {state.errors?.dueDate ? (
-            <p className="text-sm text-red-600">{state.errors.dueDate}</p>
+            <p id={`${idPrefix}-dueDate-error`} role="alert" className="text-sm text-red-600">
+              {state.errors.dueDate}
+            </p>
           ) : null}
         </div>
       </div>
 
       <div className="flex gap-3">
         <div className="flex flex-1 flex-col gap-1">
-          <label htmlFor={`${mode}-columnId-${taskId ?? "new"}`} className="text-sm font-medium">
+          <label htmlFor={`${idPrefix}-columnId`} className="text-sm font-medium">
             Column
           </label>
           <select
-            id={`${mode}-columnId-${taskId ?? "new"}`}
+            id={`${idPrefix}-columnId`}
             name="columnId"
             defaultValue={defaultValues.columnId}
             className={inputClassName}
@@ -112,11 +127,11 @@ export function TaskForm({ mode, taskId, columns, profiles, defaultValues }: Tas
           </select>
         </div>
         <div className="flex flex-1 flex-col gap-1">
-          <label htmlFor={`${mode}-assignedTo-${taskId ?? "new"}`} className="text-sm font-medium">
+          <label htmlFor={`${idPrefix}-assignedTo`} className="text-sm font-medium">
             Assignee
           </label>
           <select
-            id={`${mode}-assignedTo-${taskId ?? "new"}`}
+            id={`${idPrefix}-assignedTo`}
             name="assignedTo"
             defaultValue={defaultValues.assignedTo}
             className={inputClassName}
@@ -131,7 +146,11 @@ export function TaskForm({ mode, taskId, columns, profiles, defaultValues }: Tas
         </div>
       </div>
 
-      {state.errors?.form ? <p className="text-sm text-red-600">{state.errors.form}</p> : null}
+      {state.errors?.form ? (
+        <p role="alert" className="text-sm text-red-600">
+          {state.errors.form}
+        </p>
+      ) : null}
 
       <SubmitButton>{mode === "create" ? "Add task" : "Save changes"}</SubmitButton>
     </form>

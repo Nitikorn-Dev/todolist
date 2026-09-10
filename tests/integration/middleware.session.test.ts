@@ -3,10 +3,15 @@ import { NextRequest } from "next/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 const getUserMock = vi.fn();
+const singleMock = vi.fn();
+const eqMock = vi.fn(() => ({ single: singleMock }));
+const selectMock = vi.fn(() => ({ eq: eqMock }));
+const fromMock = vi.fn(() => ({ select: selectMock }));
 
 vi.mock("@supabase/ssr", () => ({
   createServerClient: () => ({
     auth: { getUser: getUserMock },
+    from: fromMock,
   }),
 }));
 
@@ -20,6 +25,7 @@ function makeRequest(pathname: string) {
 describe("updateSession (protected route behavior)", () => {
   afterEach(() => {
     getUserMock.mockReset();
+    singleMock.mockReset();
   });
 
   it("redirects an unauthenticated request away from a protected route", async () => {
@@ -54,5 +60,41 @@ describe("updateSession (protected route behavior)", () => {
     const response = await updateSession(makeRequest("/login"));
 
     expect(response.status).not.toBe(307);
+  });
+});
+
+describe("updateSession (admin route protection)", () => {
+  afterEach(() => {
+    getUserMock.mockReset();
+    singleMock.mockReset();
+    fromMock.mockClear();
+  });
+
+  it("allows an ADMIN to reach an admin route", async () => {
+    getUserMock.mockResolvedValue({ data: { user: { id: "admin-1" } } });
+    singleMock.mockResolvedValue({ data: { role: "ADMIN" } });
+
+    const response = await updateSession(makeRequest("/dashboard/admin/users"));
+
+    expect(response.status).not.toBe(307);
+  });
+
+  it("denies a MEMBER access to an admin route", async () => {
+    getUserMock.mockResolvedValue({ data: { user: { id: "member-1" } } });
+    singleMock.mockResolvedValue({ data: { role: "MEMBER" } });
+
+    const response = await updateSession(makeRequest("/dashboard/admin/users"));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toContain("/dashboard");
+    expect(response.headers.get("location")).not.toContain("/dashboard/admin");
+  });
+
+  it("does not query profiles for a non-admin dashboard route", async () => {
+    getUserMock.mockResolvedValue({ data: { user: { id: "member-1" } } });
+
+    await updateSession(makeRequest("/dashboard"));
+
+    expect(fromMock).not.toHaveBeenCalled();
   });
 });

@@ -26,7 +26,11 @@ type TaskFormProps = {
 export function TaskForm({ mode, taskId, columns, profiles, defaultValues }: TaskFormProps) {
   const action = mode === "create" ? createTaskAction : updateTaskAction;
   const [state, formAction] = useActionState(action, initialState);
-  const idPrefix = `${mode}-${taskId ?? "new"}`;
+  // Unique per column for create forms (every column renders one) and per
+  // task for edit forms — using just `mode` produced duplicate DOM ids
+  // (e.g. every column's create form was "create-new-title"), which breaks
+  // <label for> association.
+  const idPrefix = mode === "create" ? `create-${defaultValues.columnId}` : `edit-${taskId}`;
 
   return (
     <form action={formAction} noValidate className="flex flex-col gap-3">

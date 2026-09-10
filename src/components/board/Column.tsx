@@ -46,7 +46,10 @@ export function Column({ column, tasks, columns, profiles }: ColumnProps) {
   }
 
   return (
-    <div className="flex w-72 shrink-0 flex-col gap-3 rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+    <div
+      data-testid={`column-${column.name}`}
+      className="flex w-72 shrink-0 flex-col gap-3 rounded-lg bg-gray-50 p-3 dark:bg-gray-800"
+    >
       <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
         {column.name} <span className="text-gray-400">({tasks.length})</span>
       </h2>
@@ -70,6 +73,7 @@ export function Column({ column, tasks, columns, profiles }: ColumnProps) {
 
       {/* Drop zone for appending to the end of the column (including empty columns). */}
       <div
+        data-testid={`column-${column.name}-drop-zone`}
         onDragOver={(event) => event.preventDefault()}
         onDrop={handleDropAtEnd}
         className="min-h-8 rounded-md border border-dashed border-gray-300 dark:border-gray-600"

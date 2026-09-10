@@ -22,7 +22,7 @@ export function FormField({ label, name, type = "text", autoComplete, error }: F
         className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
       />
       {error ? (
-        <p id={`${name}-error`} className="text-sm text-red-600">
+        <p id={`${name}-error`} role="alert" className="text-sm text-red-600">
           {error}
         </p>
       ) : null}

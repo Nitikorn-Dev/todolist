@@ -12,7 +12,7 @@ export function SignUpForm() {
   const [state, formAction] = useActionState(signUpAction, initialState);
 
   return (
-    <form action={formAction} className="flex w-full max-w-sm flex-col gap-4">
+    <form action={formAction} noValidate className="flex w-full max-w-sm flex-col gap-4">
       <FormField label="Name" name="name" autoComplete="name" error={state.errors?.name} />
       <FormField
         label="Email"
@@ -36,7 +36,9 @@ export function SignUpForm() {
         error={state.errors?.confirmPassword}
       />
       {state.errors?.form ? (
-        <p className="text-sm text-red-600">{state.errors.form}</p>
+        <p role="alert" className="text-sm text-red-600">
+          {state.errors.form}
+        </p>
       ) : null}
       <SubmitButton>Sign up</SubmitButton>
       <p className="text-center text-sm text-gray-600 dark:text-gray-400">

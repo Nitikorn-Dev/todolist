@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useFormStatus } from "react-dom";
 import { useTransition } from "react";
 import { deleteTaskAction, moveTaskAction } from "@/lib/tasks/actions";
 import { TaskForm } from "./TaskForm";
@@ -24,6 +25,21 @@ type TaskCardProps = {
   columns: { id: string; name: string }[];
   profiles: { id: string; name: string }[];
 };
+
+function DeleteButton({ taskTitle }: { taskTitle: string }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      aria-label={pending ? `Deleting ${taskTitle}` : `Delete ${taskTitle}`}
+      className="text-xs font-medium text-red-600 hover:underline disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      {pending ? "Deleting..." : "Delete"}
+    </button>
+  );
+}
 
 export function TaskCard({ task, columnId, taskIds, columns, profiles }: TaskCardProps) {
   const router = useRouter();
@@ -113,9 +129,7 @@ export function TaskCard({ task, columnId, taskIds, columns, profiles }: TaskCar
 
       <form action={deleteTaskAction} className="mt-2">
         <input type="hidden" name="taskId" value={task.id} />
-        <button type="submit" className="text-xs font-medium text-red-600 hover:underline">
-          Delete
-        </button>
+        <DeleteButton taskTitle={task.title} />
       </form>
     </li>
   );

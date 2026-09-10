@@ -51,18 +51,22 @@ export function Column({ column, tasks, columns, profiles }: ColumnProps) {
         {column.name} <span className="text-gray-400">({tasks.length})</span>
       </h2>
 
-      <ul className="flex flex-col gap-2">
-        {tasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            columnId={column.id}
-            taskIds={taskIds}
-            columns={columns}
-            profiles={profiles}
-          />
-        ))}
-      </ul>
+      {tasks.length === 0 ? (
+        <p className="text-xs text-gray-400 dark:text-gray-500">No tasks yet.</p>
+      ) : (
+        <ul className="flex flex-col gap-2">
+          {tasks.map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              columnId={column.id}
+              taskIds={taskIds}
+              columns={columns}
+              profiles={profiles}
+            />
+          ))}
+        </ul>
+      )}
 
       {/* Drop zone for appending to the end of the column (including empty columns). */}
       <div
